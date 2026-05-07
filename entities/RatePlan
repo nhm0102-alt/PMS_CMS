@@ -1,0 +1,82 @@
+{
+  "name": "RatePlan",
+  "type": "object",
+  "properties": {
+    "property_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "T\u00ean g\u00f3i gi\u00e1"
+    },
+    "code": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "room_type_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "\u00c1p d\u1ee5ng cho h\u1ea1ng ph\u00f2ng n\u00e0o"
+    },
+    "cancellation_policy_id": {
+      "type": "string",
+      "description": "ID ch\u00ednh s\u00e1ch ho\u00e0n h\u1ee7y \u00e1p d\u1ee5ng"
+    },
+    "surcharge_policy_id": {
+      "type": "string",
+      "description": "ID ch\u00ednh s\u00e1ch ph\u1ee5 thu \u00e1p d\u1ee5ng"
+    },
+    "meal_plan": {
+      "type": "string",
+      "enum": [
+        "none",
+        "breakfast",
+        "half_board",
+        "full_board",
+        "all_inclusive"
+      ],
+      "default": "none",
+      "description": "Ch\u1ebf \u0111\u1ed9 \u0103n"
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "C\u00e1c d\u1ecbch v\u1ee5 \u0111i k\u00e8m"
+    },
+    "price_modifier_type": {
+      "type": "string",
+      "enum": [
+        "fixed",
+        "percent"
+      ],
+      "default": "percent",
+      "description": "\u0110i\u1ec1u ch\u1ec9nh gi\u00e1 so v\u1edbi gi\u00e1 g\u1ed1c"
+    },
+    "price_modifier_value": {
+      "type": "number",
+      "default": 0,
+      "description": "Gi\u00e1 tr\u1ecb \u0111i\u1ec1u ch\u1ec9nh (s\u1ed1 %, ho\u1eb7c s\u1ed1 ti\u1ec1n c\u1ed1 \u0111\u1ecbnh VND)"
+    },
+    "min_stay": {
+      "type": "number",
+      "default": 1
+    },
+    "max_stay": {
+      "type": "number"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "property_id",
+    "name"
+  ]
+}
