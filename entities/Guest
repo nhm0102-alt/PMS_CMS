@@ -1,0 +1,94 @@
+{
+  "name": "Guest",
+  "type": "object",
+  "properties": {
+    "property_id": {
+      "type": "string"
+    },
+    "first_name": {
+      "type": "string"
+    },
+    "last_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "nationality": {
+      "type": "string"
+    },
+    "id_type": {
+      "type": "string",
+      "enum": [
+        "passport",
+        "national_id",
+        "driver_license",
+        "other"
+      ],
+      "default": "passport"
+    },
+    "id_number": {
+      "type": "string"
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date"
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female",
+        "other"
+      ]
+    },
+    "address": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "loyalty_tier": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "silver",
+        "gold",
+        "platinum"
+      ],
+      "default": "standard"
+    },
+    "loyalty_points": {
+      "type": "number",
+      "default": 0
+    },
+    "total_stays": {
+      "type": "number",
+      "default": 0
+    },
+    "total_spent": {
+      "type": "number",
+      "default": 0
+    },
+    "notes": {
+      "type": "string"
+    },
+    "preferences": {
+      "type": "string"
+    },
+    "is_blacklisted": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "first_name",
+    "last_name"
+  ]
+}
