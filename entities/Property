@@ -1,0 +1,134 @@
+{
+  "name": "Property",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "hotel",
+        "resort",
+        "hostel",
+        "villa",
+        "apartment",
+        "guesthouse"
+      ]
+    },
+    "address": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "star_rating": {
+      "type": "number"
+    },
+    "total_rooms": {
+      "type": "number"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "cover_url": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "suspended",
+        "trial"
+      ],
+      "default": "trial"
+    },
+    "license_type": {
+      "type": "string",
+      "enum": [
+        "basic",
+        "professional",
+        "enterprise"
+      ],
+      "default": "basic"
+    },
+    "license_start": {
+      "type": "string",
+      "format": "date"
+    },
+    "license_end": {
+      "type": "string",
+      "format": "date"
+    },
+    "contract_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "expired",
+        "pending",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "monthly_fee": {
+      "type": "number"
+    },
+    "timezone": {
+      "type": "string",
+      "default": "Asia/Ho_Chi_Minh"
+    },
+    "currency": {
+      "type": "string",
+      "default": "VND"
+    },
+    "check_in_time": {
+      "type": "string",
+      "default": "14:00"
+    },
+    "check_out_time": {
+      "type": "string",
+      "default": "12:00"
+    },
+    "tax_rate": {
+      "type": "number",
+      "default": 10
+    },
+    "latitude": {
+      "type": "number",
+      "description": "V\u0129 \u0111\u1ed9"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Kinh \u0111\u1ed9"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Danh s\u00e1ch URL \u1ea3nh c\u1ee7a kh\u00e1ch s\u1ea1n"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
