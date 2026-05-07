@@ -1,0 +1,132 @@
+{
+  "name": "Reservation",
+  "type": "object",
+  "properties": {
+    "property_id": {
+      "type": "string"
+    },
+    "reservation_number": {
+      "type": "string"
+    },
+    "guest_id": {
+      "type": "string"
+    },
+    "room_id": {
+      "type": "string"
+    },
+    "room_type_id": {
+      "type": "string"
+    },
+    "check_in_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "check_out_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "actual_check_in": {
+      "type": "string"
+    },
+    "actual_check_out": {
+      "type": "string"
+    },
+    "num_adults": {
+      "type": "number",
+      "default": 1
+    },
+    "num_children": {
+      "type": "number",
+      "default": 0
+    },
+    "nights": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "checked_in",
+        "checked_out",
+        "cancelled",
+        "no_show"
+      ],
+      "default": "pending"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "direct",
+        "phone",
+        "email",
+        "walk_in",
+        "booking_com",
+        "agoda",
+        "expedia",
+        "airbnb",
+        "traveloka",
+        "other_ota"
+      ],
+      "default": "direct"
+    },
+    "room_rate": {
+      "type": "number"
+    },
+    "total_amount": {
+      "type": "number"
+    },
+    "discount_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "tax_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "deposit_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "paid_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "balance_due": {
+      "type": "number",
+      "default": 0
+    },
+    "promo_code": {
+      "type": "string"
+    },
+    "special_requests": {
+      "type": "string"
+    },
+    "internal_notes": {
+      "type": "string"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "cash",
+        "credit_card",
+        "debit_card",
+        "bank_transfer",
+        "ota_prepaid",
+        "invoice"
+      ],
+      "default": "cash"
+    },
+    "cancellation_reason": {
+      "type": "string"
+    },
+    "rate_plan": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "property_id",
+    "check_in_date",
+    "check_out_date"
+  ]
+}
