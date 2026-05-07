@@ -1,0 +1,82 @@
+{
+  "name": "RoomType",
+  "type": "object",
+  "properties": {
+    "property_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "T\u00ean lo\u1ea1i ph\u00f2ng"
+    },
+    "code": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "standard_adults": {
+      "type": "number",
+      "default": 2,
+      "description": "Ti\u00eau chu\u1ea9n s\u1ed1 ng\u01b0\u1eddi l\u1edbn"
+    },
+    "max_adults": {
+      "type": "number",
+      "default": 2,
+      "description": "T\u1ed1i \u0111a ng\u01b0\u1eddi l\u1edbn"
+    },
+    "max_children": {
+      "type": "number",
+      "default": 1,
+      "description": "T\u1ed1i \u0111a tr\u1ebb em"
+    },
+    "max_occupancy": {
+      "type": "number",
+      "default": 3,
+      "description": "T\u1ed5ng s\u1ee9c ch\u1ee9a t\u1ed1i \u0111a"
+    },
+    "base_price": {
+      "type": "number"
+    },
+    "area": {
+      "type": "number",
+      "description": "Di\u1ec7n t\u00edch m2"
+    },
+    "bed_type": {
+      "type": "string",
+      "enum": [
+        "single",
+        "double",
+        "twin",
+        "king",
+        "queen",
+        "suite"
+      ],
+      "default": "double"
+    },
+    "amenities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "total_rooms": {
+      "type": "number",
+      "default": 1
+    }
+  },
+  "required": [
+    "property_id",
+    "name"
+  ]
+}
