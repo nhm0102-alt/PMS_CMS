@@ -1,0 +1,31 @@
+{
+  "name": "UserProperty",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "property_id": {
+      "type": "string"
+    },
+    "role_name": {
+      "type": "string",
+      "description": "T\u00ean b\u1ed9 quy\u1ec1n do hotel admin \u0111\u1eb7t"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Danh s\u00e1ch module \u0111\u01b0\u1ee3c ph\u00e9p truy c\u1eadp"
+    },
+    "is_hotel_admin": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "user_email",
+    "property_id"
+  ]
+}
