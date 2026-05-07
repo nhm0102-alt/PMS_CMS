@@ -1,0 +1,133 @@
+{
+  "name": "FolioTransaction",
+  "type": "object",
+  "properties": {
+    "property_id": {
+      "type": "string"
+    },
+    "reservation_id": {
+      "type": "string"
+    },
+    "folio_number": {
+      "type": "string",
+      "description": "e.g. F-0001-A (one reservation can have multiple folios)"
+    },
+    "transaction_type": {
+      "type": "string",
+      "enum": [
+        "room_charge",
+        "extra_charge",
+        "payment",
+        "refund",
+        "discount",
+        "tax",
+        "transfer_in",
+        "transfer_out",
+        "adjustment",
+        "void",
+        "deposit",
+        "ota_virtual_card",
+        "city_ledger",
+        "late_checkout_fee",
+        "extra_bed_fee",
+        "service_charge",
+        "minibar",
+        "restaurant",
+        "laundry",
+        "spa",
+        "transport",
+        "other_charge"
+      ]
+    },
+    "amount": {
+      "type": "number",
+      "description": "Positive = debit (charge), Negative = credit (payment/refund)"
+    },
+    "currency": {
+      "type": "string",
+      "default": "VND"
+    },
+    "description": {
+      "type": "string"
+    },
+    "reference_number": {
+      "type": "string",
+      "description": "Payment ref, receipt no, etc."
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "cash",
+        "credit_card",
+        "debit_card",
+        "bank_transfer",
+        "ota_prepaid",
+        "city_ledger",
+        "complimentary",
+        "other"
+      ]
+    },
+    "business_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Hotel business date (not system date)"
+    },
+    "posted_by": {
+      "type": "string",
+      "description": "User email who posted this"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "voided",
+        "transferred"
+      ],
+      "default": "active"
+    },
+    "void_reason": {
+      "type": "string"
+    },
+    "voided_by": {
+      "type": "string"
+    },
+    "voided_at": {
+      "type": "string"
+    },
+    "tax_rate": {
+      "type": "number",
+      "default": 0
+    },
+    "tax_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "is_tax_line": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if this row IS the tax line (not the charge itself)"
+    },
+    "parent_transaction_id": {
+      "type": "string",
+      "description": "For tax lines linked to a charge, or refund linked to payment"
+    },
+    "charge_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date this charge applies to (for nightly room charges)"
+    },
+    "is_night_audit": {
+      "type": "boolean",
+      "default": false
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "property_id",
+    "reservation_id",
+    "transaction_type",
+    "amount"
+  ]
+}
