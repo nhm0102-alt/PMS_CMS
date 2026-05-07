@@ -1,0 +1,45 @@
+{
+  "name": "Room",
+  "type": "object",
+  "properties": {
+    "property_id": {
+      "type": "string"
+    },
+    "room_type_id": {
+      "type": "string"
+    },
+    "room_number": {
+      "type": "string"
+    },
+    "room_name": {
+      "type": "string",
+      "description": "T\u00ean g\u1ecdi c\u1ee7a ph\u00f2ng, VD: Daisy, Rose..."
+    },
+    "floor": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "available",
+        "occupied",
+        "dirty",
+        "cleaning",
+        "maintenance",
+        "out_of_order"
+      ],
+      "default": "available"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "property_id",
+    "room_number"
+  ]
+}
