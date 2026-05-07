@@ -1,0 +1,93 @@
+{
+  "name": "Policy",
+  "type": "object",
+  "properties": {
+    "property_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "T\u00ean ch\u00ednh s\u00e1ch"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "cancellation",
+        "surcharge"
+      ],
+      "description": "Lo\u1ea1i ch\u00ednh s\u00e1ch"
+    },
+    "cancellation_rules": {
+      "type": "array",
+      "description": "C\u00e1c m\u1ed1c ch\u00ednh s\u00e1ch h\u1ee7y",
+      "items": {
+        "type": "object",
+        "properties": {
+          "days_before": {
+            "type": "number",
+            "description": "S\u1ed1 ng\u00e0y tr\u01b0\u1edbc check-in"
+          },
+          "charge_percent": {
+            "type": "number",
+            "description": "% ph\u00ed h\u1ee7y (0 = mi\u1ec5n ph\u00ed)"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "extra_adult_fee": {
+      "type": "number",
+      "default": 0,
+      "description": "Ph\u1ee5 thu ng\u01b0\u1eddi l\u1edbn th\u00eam (VND)"
+    },
+    "child_rules": {
+      "type": "array",
+      "description": "Ch\u00ednh s\u00e1ch ph\u1ee5 thu tr\u1ebb em theo \u0111\u1ed9 tu\u1ed5i",
+      "items": {
+        "type": "object",
+        "properties": {
+          "age_from": {
+            "type": "number"
+          },
+          "age_to": {
+            "type": "number"
+          },
+          "free_count": {
+            "type": "number",
+            "description": "S\u1ed1 tr\u1ebb mi\u1ec5n ph\u00ed trong nh\u00f3m tu\u1ed5i n\u00e0y"
+          },
+          "fee_per_child": {
+            "type": "number",
+            "description": "Ph\u00ed cho m\u1ed7i tr\u1ebb th\u00eam (VND)"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "extra_bed_fee": {
+      "type": "number",
+      "default": 0,
+      "description": "Ph\u1ee5 thu gi\u01b0\u1eddng ph\u1ee5 (VND/\u0111\u00eam)"
+    },
+    "extra_bed_available": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "property_id",
+    "name",
+    "type"
+  ]
+}
