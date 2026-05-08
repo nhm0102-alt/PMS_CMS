@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import PageHeader from "@/components/shared/PageHeader";
 import StatCard from "@/components/shared/StatCard";
 import { DollarSign, TrendingUp, Building2, CreditCard, BarChart3, CheckCircle } from "lucide-react";
@@ -16,8 +16,8 @@ export default function FinancialManagement() {
 
   useEffect(() => {
     Promise.all([
-      base44.entities.LicenseTransaction.list("-created_date", 200),
-      base44.entities.Property.list("-created_date", 100),
+      api.licenseTransactions.list("-created_date", 200),
+      api.properties.list("-created_date", 100),
     ]).then(([t, p]) => { setTransactions(t); setProperties(p); setLoading(false); });
   }, []);
 

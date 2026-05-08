@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import { format, parseISO, differenceInDays, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
@@ -48,7 +48,7 @@ export default function FolioDetail() {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then(setCurrentUser).catch(() => {});
+    api.auth.me().then(setCurrentUser).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -59,8 +59,8 @@ export default function FolioDetail() {
   const loadAll = async () => {
     setLoading(true);
     const [res, txns] = await Promise.all([
-      base44.entities.Reservation.filter({ id: reservationId }),
-      base44.entities.FolioTransaction.filter({ reservation_id: reservationId }, "created_date", 500),
+      api.reservations.filter({ id: reservationId }),
+      api.folioTransactions.filter({ reservation_id: reservationId }, "created_date", 500),
     ]);
     const r = res?.[0];
     setReservation(r);
@@ -68,9 +68,9 @@ export default function FolioDetail() {
 
     if (r) {
       const [guestRes, roomRes, rtRes] = await Promise.all([
-        r.guest_id ? base44.entities.Guest.filter({ id: r.guest_id }) : Promise.resolve([]),
-        r.room_id ? base44.entities.Room.filter({ id: r.room_id }) : Promise.resolve([]),
-        r.room_type_id ? base44.entities.RoomType.filter({ id: r.room_type_id }) : Promise.resolve([]),
+        r.guest_id ? api.guests.filter({ id: r.guest_id }) : Promise.resolve([]),
+        r.room_id ? api.rooms.filter({ id: r.room_id }) : Promise.resolve([]),
+        r.room_type_id ? api.roomTypes.filter({ id: r.room_type_id }) : Promise.resolve([]),
       ]);
       setGuest(guestRes?.[0] || null);
       setRoom(roomRes?.[0] || null);
@@ -115,11 +115,11 @@ export default function FolioDetail() {
       is_night_audit: false,
       notes: formData.notes,
     };
-    await base44.entities.FolioTransaction.create(txnData);
+    await api.folioTransactions.create(txnData);
 
     // Auto-post tax line if apply_tax
     if (formData.apply_tax && formData.tax_amount > 0) {
-      const taxTxn = await base44.entities.FolioTransaction.create({
+      const taxTxn = await api.folioTransactions.create({
         ...txnData,
         transaction_type: "tax",
         amount: formData.tax_amount,
@@ -136,7 +136,7 @@ export default function FolioDetail() {
 
   const handleVoidConfirm = async (txn, reason) => {
     setSaving(true);
-    await base44.entities.FolioTransaction.update(txn.id, {
+    await api.folioTransactions.update(txn.id, {
       status: "voided",
       void_reason: reason,
       voided_by: currentUser?.email || "staff",
@@ -150,7 +150,7 @@ export default function FolioDetail() {
 
   const handleStatusChange = async (newStatus) => {
     setSaving(true);
-    await base44.entities.Reservation.update(reservationId, { status: newStatus });
+    await api.reservations.update(reservationId, { status: newStatus });
     setReservation(prev => ({ ...prev, status: newStatus }));
     setSaving(false);
   };
@@ -162,7 +162,7 @@ export default function FolioDetail() {
     const roomRate = reservation.room_rate || roomType?.base_price || 0;
     const taxAmt = Math.round(roomRate * (reservation.tax_rate || 10) / 100);
 
-    await base44.entities.FolioTransaction.create({
+    await api.folioTransactions.create({
       property_id: propertyId || reservation.property_id,
       reservation_id: reservationId,
       transaction_type: "room_charge",
@@ -177,7 +177,7 @@ export default function FolioDetail() {
       tax_amount: taxAmt,
     });
     if (taxAmt > 0) {
-      await base44.entities.FolioTransaction.create({
+      await api.folioTransactions.create({
         property_id: propertyId || reservation.property_id,
         reservation_id: reservationId,
         transaction_type: "tax",

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import PageHeader from "@/components/shared/PageHeader";
@@ -40,7 +40,7 @@ export default function ReservationList() {
 
   useEffect(() => {
     const query = propertyId ? { property_id: propertyId } : {};
-    base44.entities.Reservation.filter(query, "-created_date", 100).then(d => {
+    api.reservations.filter(query, "-created_date", 100).then(d => {
       setReservations(d);
       setLoading(false);
     });
@@ -56,12 +56,12 @@ export default function ReservationList() {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Xóa đặt phòng này?")) return;
-    await base44.entities.Reservation.delete(id);
+    await api.reservations.delete(id);
     setReservations(prev => prev.filter(r => r.id !== id));
   };
 
   const handleStatusChange = async (r, status) => {
-    await base44.entities.Reservation.update(r.id, { status });
+    await api.reservations.update(r.id, { status });
     setReservations(prev => prev.map(res => res.id === r.id ? { ...res, status } : res));
   };
 

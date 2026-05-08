@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -56,7 +56,7 @@ export default function PolicySettings() {
 
   const load = async () => {
     setLoading(true);
-    const data = await base44.entities.Policy.filter({ property_id: propertyId });
+    const data = await api.policies.filter({ property_id: propertyId });
     setPolicies(data);
     setLoading(false);
   };
@@ -80,9 +80,9 @@ export default function PolicySettings() {
   const save = async () => {
     setSaving(true);
     if (editItem) {
-      await base44.entities.Policy.update(editItem.id, form);
+      await api.policies.update(editItem.id, form);
     } else {
-      await base44.entities.Policy.create({ ...form, property_id: propertyId });
+      await api.policies.create({ ...form, property_id: propertyId });
     }
     setSaving(false);
     setShowForm(false);
@@ -90,7 +90,7 @@ export default function PolicySettings() {
   };
 
   const deletePolicy = async (id) => {
-    await base44.entities.Policy.delete(id);
+    await api.policies.delete(id);
     setDeleteConfirm(null);
     load();
   };

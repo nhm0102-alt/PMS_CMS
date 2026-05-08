@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Building2, Users, Key, DollarSign,
@@ -176,13 +176,13 @@ export default function Layout({ children, currentPageName }) {
   const currentPropertyId = new URLSearchParams(location.search).get("property_id");
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    api.auth.me().then(setUser).catch(() => {});
   }, []);
 
   // Fetch property info when property_id changes
   useEffect(() => {
     if (currentPropertyId) {
-      base44.entities.Property.filter({ id: currentPropertyId }).then(res => {
+      api.properties.filter({ id: currentPropertyId }).then(res => {
         setCurrentProperty(res?.[0] || null);
       }).catch(() => setCurrentProperty(null));
     } else {
@@ -303,12 +303,12 @@ export default function Layout({ children, currentPageName }) {
               <div className="text-white text-xs font-medium truncate">{user?.full_name || "Admin"}</div>
               <div className="text-sidebar-foreground/50 text-xs truncate">{user?.email}</div>
             </div>
-            <button onClick={() => base44.auth.logout()} className="text-sidebar-foreground/50 hover:text-destructive">
+            <button onClick={() => { api.auth.logout(); window.location.href = '/'; }} className="text-sidebar-foreground/50 hover:text-destructive">
               <LogOut className="w-4 h-4" />
             </button>
           </div>
         ) : (
-          <button onClick={() => base44.auth.logout()} className="text-sidebar-foreground/50 hover:text-destructive p-1">
+          <button onClick={() => { api.auth.logout(); window.location.href = '/'; }} className="text-sidebar-foreground/50 hover:text-destructive p-1">
             <LogOut className="w-4 h-4" />
           </button>
         )}

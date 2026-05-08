@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import PageHeader from "@/components/shared/PageHeader";
@@ -47,7 +47,7 @@ export default function PropertiesManagement() {
   const [saving, setSaving] = useState(false);
 
   const load = () => {
-    base44.entities.Property.list("-created_date", 100).then(d => { setProperties(d); setLoading(false); });
+    api.properties.list("-created_date", 100).then(d => { setProperties(d); setLoading(false); });
   };
   useEffect(load, []);
 
@@ -62,8 +62,8 @@ export default function PropertiesManagement() {
       total_rooms: form.total_rooms ? Number(form.total_rooms) : undefined,
       monthly_fee: form.monthly_fee ? Number(form.monthly_fee) : undefined,
     };
-    if (editProp) await base44.entities.Property.update(editProp.id, data);
-    else await base44.entities.Property.create(data);
+    if (editProp) await api.properties.update(editProp.id, data);
+    else await api.properties.create(data);
     setSaving(false);
     setShowForm(false);
     load();
@@ -71,7 +71,7 @@ export default function PropertiesManagement() {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Xóa khách sạn này?")) return;
-    await base44.entities.Property.delete(id);
+    await api.properties.delete(id);
     load();
   };
 

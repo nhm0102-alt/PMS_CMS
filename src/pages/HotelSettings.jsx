@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import PageHeader from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +29,7 @@ export default function HotelSettings() {
 
   useEffect(() => {
     if (propertyId) {
-      base44.entities.Property.filter({ id: propertyId }).then(d => {
+      api.properties.filter({ id: propertyId }).then(d => {
         const p = d[0];
         if (p) { setProperty(p); setForm(p); }
       });
@@ -41,13 +41,13 @@ export default function HotelSettings() {
   const handleSave = async () => {
     if (!property) return;
     setSaving(true);
-    await base44.entities.Property.update(property.id, form);
+    await api.properties.update(property.id, form);
     setSaving(false); setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
 
   const uploadFile = async (file) => {
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    const { file_url } = await api.integrations.uploadFile(file);
     return file_url;
   };
 

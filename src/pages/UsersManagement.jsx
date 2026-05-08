@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import PageHeader from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,22 +27,22 @@ export default function UsersManagement() {
 
   const load = () => {
     Promise.all([
-      base44.entities.User.list("-created_date", 100),
-      base44.entities.Property.list("-created_date", 100),
-      base44.entities.UserProperty.list("-created_date", 200),
+      api.users.list("-created_date", 100),
+      api.properties.list("-created_date", 100),
+      api.userProperties.list("-created_date", 200),
     ]).then(([u, p, up]) => { setUsers(u); setProperties(p); setUserProps(up); setLoading(false); });
   };
   useEffect(load, []);
 
   const handleInvite = async () => {
     setInviting(true);
-    await base44.users.inviteUser(inviteEmail, inviteRole);
+    await api.users.inviteUser(inviteEmail, inviteRole);
     setInviting(false); setShowInvite(false); setInviteEmail("");
   };
 
   const handleAssign = async () => {
     setSaving(true);
-    await base44.entities.UserProperty.create({
+    await api.userProperties.create({
       user_email: showAssign.email,
       property_id: assignForm.property_id,
       role_name: assignForm.role_name,

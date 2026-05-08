@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import PageHeader from "@/components/shared/PageHeader";
 import StatCard from "@/components/shared/StatCard";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from "recharts";
@@ -21,8 +21,8 @@ export default function Reports() {
   useEffect(() => {
     const q = propertyId ? { property_id: propertyId } : {};
     Promise.all([
-      base44.entities.Reservation.filter(q, "-created_date", 500),
-      base44.entities.Room.filter(q),
+      api.reservations.filter(q, "-created_date", 500),
+      api.rooms.filter(q),
     ]).then(([r, rm]) => { setReservations(r); setRooms(rm); setLoading(false); });
   }, [propertyId]);
 

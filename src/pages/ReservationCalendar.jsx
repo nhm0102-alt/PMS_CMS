@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -63,10 +63,10 @@ export default function ReservationCalendar() {
   useEffect(() => {
     const q = propertyId ? { property_id: propertyId } : {};
     Promise.all([
-      base44.entities.Room.filter(q, "room_number", 300),
-      base44.entities.RoomType.filter(q),
-      base44.entities.Reservation.filter(q, "-check_in_date", 500),
-      base44.entities.Guest.filter(q, "last_name", 500),
+      api.rooms.filter(q, "room_number", 300),
+      api.roomTypes.filter(q),
+      api.reservations.filter(q, "-check_in_date", 500),
+      api.guests.filter(q, "last_name", 500),
     ]).then(([r, rt, res, g]) => {
       setRooms(r);
       setRoomTypes(rt);
@@ -407,7 +407,7 @@ function TimelineView({ days, startDate, numDays, setNumDays, roomsByType, unass
           if (res) {
             const newCI = format(addDays(parseISO(res.check_in_date), daysDelta), "yyyy-MM-dd");
             const newCO = format(addDays(parseISO(res.check_out_date), daysDelta), "yyyy-MM-dd");
-            await base44.entities.Reservation.update(res.id, { check_in_date: newCI, check_out_date: newCO });
+            await api.reservations.update(res.id, { check_in_date: newCI, check_out_date: newCO });
             window.location.reload();
           }
         }
@@ -421,7 +421,7 @@ function TimelineView({ days, startDate, numDays, setNumDays, roomsByType, unass
           if (res) {
             const nights = Math.round(newWidth / DAY_COL_WIDTH);
             const newCO = format(addDays(parseISO(res.check_in_date), nights), "yyyy-MM-dd");
-            await base44.entities.Reservation.update(res.id, { check_out_date: newCO, nights });
+            await api.reservations.update(res.id, { check_out_date: newCO, nights });
             window.location.reload();
           }
         }
@@ -456,7 +456,7 @@ function TimelineView({ days, startDate, numDays, setNumDays, roomsByType, unass
         if (res) {
           // optimistic update
           setReservations(prev => prev.map(r => r.id === res.id ? { ...r, room_id: dropTarget } : r));
-          await base44.entities.Reservation.update(res.id, { room_id: dropTarget });
+          await api.reservations.update(res.id, { room_id: dropTarget });
         }
       }
       setAssignDrag(null);
@@ -711,7 +711,7 @@ function TimelineView({ days, startDate, numDays, setNumDays, roomsByType, unass
             onStatusChange={async (res, status) => {
               setReservations(prev => prev.map(r => r.id === res.id ? { ...r, status } : r));
               setSelectedRes(prev => prev ? { ...prev, status } : prev);
-              await base44.entities.Reservation.update(res.id, { status });
+              await api.reservations.update(res.id, { status });
             }}
           />
         );
@@ -940,7 +940,7 @@ function OccupancyRowScroller({ days, today, totalRooms, getDayOccupancy, scroll
 function FloorView({ rooms, typeMap, floors, filterFloor, reservations, propertyId }) {
   const updateStatus = async (room, newStatus) => {
     // optimistic local update handled by parent — but since we don't have setter here, just call API
-    await base44.entities.Room.update(room.id, { status: newStatus });
+    await api.rooms.update(room.id, { status: newStatus });
     window.location.reload(); // simple reload for now
   };
 
@@ -1029,7 +1029,7 @@ function FloorRoomCard({ room, typeMap, isCheckingIn, isCheckingOut }) {
   const statuses = Object.entries(ROOM_STATUS_LABEL);
 
   const handleStatusChange = async (newStatus) => {
-    await base44.entities.Room.update(room.id, { status: newStatus });
+    await api.rooms.update(room.id, { status: newStatus });
     setShowMenu(false);
     window.location.reload();
   };
@@ -1100,7 +1100,7 @@ function ListView({ reservations, filterStatus, search, propertyId }) {
   };
 
   const handleStatusChange = async (r, status) => {
-    await base44.entities.Reservation.update(r.id, { status });
+    await api.reservations.update(r.id, { status });
     window.location.reload();
   };
 

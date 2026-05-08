@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import PageHeader from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +27,7 @@ export default function CheckInOut() {
 
   const load = () => {
     const q = propertyId ? { property_id: propertyId } : {};
-    base44.entities.Reservation.filter(q, "-check_in_date", 200).then(d => {
+    api.reservations.filter(q, "-check_in_date", 200).then(d => {
       setReservations(d);
       setLoading(false);
     });
@@ -54,7 +54,7 @@ export default function CheckInOut() {
   const doCheckIn = async () => {
     if (!checkInModal) return;
     setProcessing(checkInModal.id);
-    await base44.entities.Reservation.update(checkInModal.id, {
+    await api.reservations.update(checkInModal.id, {
       status: "checked_in",
       actual_check_in: new Date().toISOString(),
       internal_notes: notes || checkInModal.internal_notes,
@@ -68,7 +68,7 @@ export default function CheckInOut() {
   const doCheckOut = async () => {
     if (!checkOutModal) return;
     setProcessing(checkOutModal.id);
-    await base44.entities.Reservation.update(checkOutModal.id, {
+    await api.reservations.update(checkOutModal.id, {
       status: "checked_out",
       actual_check_out: new Date().toISOString(),
     });

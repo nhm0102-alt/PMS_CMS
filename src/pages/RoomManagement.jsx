@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import PageHeader from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,8 +44,8 @@ export default function RoomManagement() {
   const load = () => {
     const q = propertyId ? { property_id: propertyId } : {};
     Promise.all([
-      base44.entities.Room.filter(q, "room_number"),
-      base44.entities.RoomType.filter(q),
+      api.rooms.filter(q, "room_number"),
+      api.roomTypes.filter(q),
     ]).then(([r, rt]) => { setRooms(r); setRoomTypes(rt); setLoading(false); });
   };
   useEffect(load, [propertyId]);
@@ -62,16 +62,16 @@ export default function RoomManagement() {
       base_price: Number(rtForm.base_price),
       area: Number(rtForm.area),
     };
-    if (editRT) await base44.entities.RoomType.update(editRT.id, d);
-    else await base44.entities.RoomType.create(d);
+    if (editRT) await api.roomTypes.update(editRT.id, d);
+    else await api.roomTypes.create(d);
     setSaving(false); setShowRTForm(false); load();
   };
 
   const saveRoom = async () => {
     setSaving(true);
     const d = { ...roomForm, property_id: propertyId };
-    if (editRoom) await base44.entities.Room.update(editRoom.id, d);
-    else await base44.entities.Room.create(d);
+    if (editRoom) await api.rooms.update(editRoom.id, d);
+    else await api.rooms.create(d);
     setSaving(false); setShowRoomForm(false); load();
   };
 
@@ -132,7 +132,7 @@ export default function RoomManagement() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => { setRoomForm({ ...defRoom, ...room }); setEditRoom(room); setShowRoomForm(true); }} className="gap-2"><Edit className="w-4 h-4" />Chỉnh sửa</DropdownMenuItem>
-                          <DropdownMenuItem onClick={async () => { await base44.entities.Room.delete(room.id); load(); }} className="gap-2 text-destructive"><Trash2 className="w-4 h-4" />Xóa</DropdownMenuItem>
+                          <DropdownMenuItem onClick={async () => { await api.rooms.delete(room.id); load(); }} className="gap-2 text-destructive"><Trash2 className="w-4 h-4" />Xóa</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
@@ -164,7 +164,7 @@ export default function RoomManagement() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => { setRTForm({ ...defRT, ...rt }); setEditRT(rt); setShowRTForm(true); }} className="gap-2"><Edit className="w-4 h-4" />Chỉnh sửa</DropdownMenuItem>
-                      <DropdownMenuItem onClick={async () => { await base44.entities.RoomType.delete(rt.id); load(); }} className="gap-2 text-destructive"><Trash2 className="w-4 h-4" />Xóa</DropdownMenuItem>
+                      <DropdownMenuItem onClick={async () => { await api.roomTypes.delete(rt.id); load(); }} className="gap-2 text-destructive"><Trash2 className="w-4 h-4" />Xóa</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -78,8 +78,8 @@ export default function PricingCalendar() {
       try {
         if (pid !== "demo") {
           [rt, rp] = await Promise.all([
-            base44.entities.RoomType.filter({ property_id: pid }),
-            base44.entities.RatePlan.filter({ property_id: pid }),
+            api.roomTypes.filter({ property_id: pid }),
+            api.ratePlans.filter({ property_id: pid }),
           ]);
         }
       } catch {}

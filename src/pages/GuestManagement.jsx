@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import PageHeader from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,7 +41,7 @@ export default function GuestManagement() {
 
   const load = () => {
     const q = propertyId ? { property_id: propertyId } : {};
-    base44.entities.Guest.filter(q, "-created_date", 100).then(d => { setGuests(d); setLoading(false); });
+    api.guests.filter(q, "-created_date", 100).then(d => { setGuests(d); setLoading(false); });
   };
   useEffect(load, [propertyId]);
 
@@ -50,8 +50,8 @@ export default function GuestManagement() {
   const handleSave = async () => {
     setSaving(true);
     const d = { ...form, property_id: propertyId };
-    if (editGuest) await base44.entities.Guest.update(editGuest.id, d);
-    else await base44.entities.Guest.create(d);
+    if (editGuest) await api.guests.update(editGuest.id, d);
+    else await api.guests.create(d);
     setSaving(false); setShowForm(false); load();
   };
 
@@ -116,7 +116,7 @@ export default function GuestManagement() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={e => { e.stopPropagation(); setForm({ ...defForm, ...g }); setEditGuest(g); setShowForm(true); }} className="gap-2"><Edit className="w-4 h-4" />Chỉnh sửa</DropdownMenuItem>
-                          <DropdownMenuItem onClick={async e => { e.stopPropagation(); await base44.entities.Guest.delete(g.id); load(); }} className="gap-2 text-destructive"><Trash2 className="w-4 h-4" />Xóa</DropdownMenuItem>
+                          <DropdownMenuItem onClick={async e => { e.stopPropagation(); await api.guests.delete(g.id); load(); }} className="gap-2 text-destructive"><Trash2 className="w-4 h-4" />Xóa</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>

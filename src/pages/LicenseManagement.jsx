@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import PageHeader from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,8 +37,8 @@ export default function LicenseManagement() {
 
   const load = () => {
     Promise.all([
-      base44.entities.Property.list("-created_date", 100),
-      base44.entities.LicenseTransaction.list("-created_date", 100),
+      api.properties.list("-created_date", 100),
+      api.licenseTransactions.list("-created_date", 100),
     ]).then(([p, t]) => { setProperties(p); setTransactions(t); setLoading(false); });
   };
   useEffect(load, []);
@@ -47,18 +47,18 @@ export default function LicenseManagement() {
 
   const handleSave = async () => {
     setSaving(true);
-    await base44.entities.LicenseTransaction.create({ ...form, amount: Number(form.amount) });
+    await api.licenseTransactions.create({ ...form, amount: Number(form.amount) });
     setSaving(false); setShowForm(false); load();
   };
 
   const handleRenew = async (prop) => {
     const newEnd = format(addDays(new Date(prop.license_end || new Date()), 365), "yyyy-MM-dd");
-    await base44.entities.Property.update(prop.id, {
+    await api.properties.update(prop.id, {
       license_end: newEnd,
       status: "active",
       contract_status: "active",
     });
-    await base44.entities.LicenseTransaction.create({
+    await api.licenseTransactions.create({
       property_id: prop.id,
       transaction_type: "renewal",
       license_type: prop.license_type,

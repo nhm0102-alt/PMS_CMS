@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import StatCard from "@/components/shared/StatCard";
@@ -36,10 +36,10 @@ export default function HotelDashboard() {
 
   useEffect(() => {
     const loads = [
-      base44.entities.Reservation.filter({ property_id: propertyId }, "-created_date", 50),
-      base44.entities.Room.filter({ property_id: propertyId }, "-created_date", 100),
+      api.reservations.filter({ property_id: propertyId }, "-created_date", 50),
+      api.rooms.filter({ property_id: propertyId }, "-created_date", 100),
     ];
-    if (propertyId) loads.unshift(base44.entities.Property.filter({ id: propertyId }));
+    if (propertyId) loads.unshift(api.properties.filter({ id: propertyId }));
 
     Promise.all(loads).then(results => {
       if (propertyId) {

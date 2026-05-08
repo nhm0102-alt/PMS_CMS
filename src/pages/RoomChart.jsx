@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import PageHeader from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,11 +38,11 @@ export default function RoomChart() {
   useEffect(() => {
     Promise.all([
       propertyId
-        ? base44.entities.Room.filter({ property_id: propertyId }, "room_number", 200)
-        : base44.entities.Room.list("room_number", 200),
+        ? api.rooms.filter({ property_id: propertyId }, "room_number", 200)
+        : api.rooms.list("room_number", 200),
       propertyId
-        ? base44.entities.RoomType.filter({ property_id: propertyId })
-        : base44.entities.RoomType.list(),
+        ? api.roomTypes.filter({ property_id: propertyId })
+        : api.roomTypes.list(),
     ]).then(([r, rt]) => {
       setRooms(r);
       setRoomTypes(rt);
@@ -54,7 +54,7 @@ export default function RoomChart() {
   const typeMap = Object.fromEntries(roomTypes.map(rt => [rt.id, rt]));
 
   const updateStatus = async (room, newStatus) => {
-    await base44.entities.Room.update(room.id, { status: newStatus });
+    await api.rooms.update(room.id, { status: newStatus });
     setRooms(prev => prev.map(r => r.id === room.id ? { ...r, status: newStatus } : r));
   };
 

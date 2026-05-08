@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import PageHeader from "@/components/shared/PageHeader";
@@ -38,9 +38,9 @@ export default function NewReservation() {
 
   useEffect(() => {
     if (propertyId) {
-      base44.entities.RoomType.filter({ property_id: propertyId, is_active: true }).then(setRoomTypes);
+      api.roomTypes.filter({ property_id: propertyId, is_active: true }).then(setRoomTypes);
     } else {
-      base44.entities.RoomType.list("-created_date", 50).then(setRoomTypes);
+      api.roomTypes.list("-created_date", 50).then(setRoomTypes);
     }
   }, [propertyId]);
 
@@ -58,7 +58,7 @@ export default function NewReservation() {
   const handleSubmit = async () => {
     setSaving(true);
     const resNum = "RES" + Date.now().toString().slice(-8);
-    await base44.entities.Reservation.create({
+    await api.reservations.create({
       property_id: propertyId,
       reservation_number: resNum,
       guest_name: `${form.guest_first_name} ${form.guest_last_name}`.trim(),

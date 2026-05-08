@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import StatCard from "@/components/shared/StatCard";
@@ -17,9 +17,9 @@ export default function SuperAdminDashboard() {
 
   useEffect(() => {
     Promise.all([
-      base44.entities.Property.list("-created_date", 50),
-      base44.entities.User.list("-created_date", 50),
-      base44.entities.LicenseTransaction.list("-created_date", 20),
+      api.properties.list("-created_date", 50),
+      api.users.list("-created_date", 50),
+      api.licenseTransactions.list("-created_date", 20),
     ]).then(([props, usrs, txns]) => {
       setProperties(props);
       setUsers(usrs);

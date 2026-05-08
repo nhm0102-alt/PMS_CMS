@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import PageHeader from "@/components/shared/PageHeader";
 import StatCard from "@/components/shared/StatCard";
 import { Button } from "@/components/ui/button";
@@ -40,8 +40,7 @@ export default function BillingPayment() {
   const [saving, setSaving] = useState(false);
 
   const load = () => {
-    const q = propertyId ? { property_id: propertyId } : {};
-    base44.entities.Invoice.filter(q, "-created_date", 100).then(d => { setInvoices(d); setLoading(false); });
+    api.invoices.list({ propertyId, sortBy: "-created_date", limit: 100 }).then(d => { setInvoices(d); setLoading(false); });
   };
   useEffect(load, [propertyId]);
 
@@ -60,7 +59,7 @@ export default function BillingPayment() {
 
   const handleSave = async () => {
     setSaving(true);
-    await base44.entities.Invoice.create({
+    await api.invoices.create({
       ...form,
       property_id: propertyId,
       subtotal: Number(form.subtotal),
@@ -153,8 +152,8 @@ export default function BillingPayment() {
                           <Button variant="ghost" size="icon" className="w-7 h-7"><MoreVertical className="w-4 h-4" /></Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={async () => { await base44.entities.Invoice.update(inv.id, { status: "paid", paid_amount: inv.total_amount, balance_due: 0 }); load(); }} className="text-success">Đánh dấu đã thanh toán</DropdownMenuItem>
-                          <DropdownMenuItem onClick={async () => { await base44.entities.Invoice.delete(inv.id); load(); }} className="text-destructive">Xóa</DropdownMenuItem>
+                          <DropdownMenuItem onClick={async () => { await api.invoices.update(inv.id, { status: "paid", paid_amount: inv.total_amount, balance_due: 0 }); load(); }} className="text-success">Đánh dấu đã thanh toán</DropdownMenuItem>
+                          <DropdownMenuItem onClick={async () => { await api.invoices.delete(inv.id); load(); }} className="text-destructive">Xóa</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -88,9 +88,9 @@ export default function RatePlanManagement() {
     try {
       if (propertyId !== "demo") {
         [rp, rt, pol] = await Promise.all([
-          base44.entities.RatePlan.filter({ property_id: propertyId }),
-          base44.entities.RoomType.filter({ property_id: propertyId }),
-          base44.entities.Policy.filter({ property_id: propertyId })
+          api.ratePlans.filter({ property_id: propertyId }),
+          api.roomTypes.filter({ property_id: propertyId }),
+          api.policies.filter({ property_id: propertyId })
         ]);
       }
     } catch {}
@@ -133,8 +133,8 @@ export default function RatePlanManagement() {
     // Try sync to DB silently
     try {
       if (propertyId !== "demo") {
-        if (editItem) await base44.entities.RatePlan.update(editItem.id, payload);
-        else await base44.entities.RatePlan.create(payload);
+        if (editItem) await api.ratePlans.update(editItem.id, payload);
+        else await api.ratePlans.create(payload);
       }
     } catch {}
     setSaving(false);
@@ -145,7 +145,7 @@ export default function RatePlanManagement() {
     const updated = ratePlans.filter(r => r.id !== id);
     setRatePlans(updated);
     saveToLS(LS_KEY, updated);
-    try { if (propertyId !== "demo") await base44.entities.RatePlan.delete(id); } catch {}
+    try { if (propertyId !== "demo") await api.ratePlans.delete(id); } catch {}
     setDeleteConfirm(null);
   };
 
