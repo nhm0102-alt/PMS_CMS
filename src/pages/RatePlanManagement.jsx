@@ -37,33 +37,6 @@ const defaultForm = {
   is_active: true
 };
 
-const LS_KEY = "staypro_rateplans";
-const LS_RT_KEY = "staypro_roomtypes";
-
-const FAKE_ROOM_TYPES = [
-  { id: "rt1", name: "Standard Room", code: "STD", base_price: 800000, total_rooms: 10 },
-  { id: "rt2", name: "Deluxe Room", code: "DLX", base_price: 1200000, total_rooms: 6 },
-  { id: "rt3", name: "Suite", code: "STE", base_price: 2500000, total_rooms: 3 },
-];
-
-const FAKE_RATE_PLANS = [
-  { id: "rp1", property_id: "demo", name: "Flexible Rate", code: "FLEX", description: "Giá linh hoạt, hoàn hủy miễn phí", meal_plan: "breakfast", price_modifier_type: "percent", price_modifier_value: 0, min_stay: 1, max_stay: "", is_active: true, room_type_ids: [], services: ["Bữa sáng miễn phí", "Wifi tốc độ cao"], cancellation_policy_id: "", surcharge_policy_id: "" },
-  { id: "rp2", property_id: "demo", name: "Non-Refundable", code: "NRF", description: "Giá không hoàn hủy, tiết kiệm 15%", meal_plan: "none", price_modifier_type: "percent", price_modifier_value: -15, min_stay: 1, max_stay: "", is_active: true, room_type_ids: [], services: [], cancellation_policy_id: "", surcharge_policy_id: "" },
-  { id: "rp3", property_id: "demo", name: "Bed & Breakfast", code: "BB", description: "Bao gồm bữa sáng cho 2 người", meal_plan: "breakfast", price_modifier_type: "percent", price_modifier_value: 10, min_stay: 2, max_stay: "", is_active: true, room_type_ids: ["rt1", "rt2"], services: ["Bữa sáng 2 người", "Nước chào"], cancellation_policy_id: "", surcharge_policy_id: "" },
-  { id: "rp4", property_id: "demo", name: "Half Board", code: "HB", description: "Sáng + tối, nghỉ tối thiểu 3 đêm", meal_plan: "half_board", price_modifier_type: "percent", price_modifier_value: 20, min_stay: 3, max_stay: "", is_active: true, room_type_ids: ["rt3"], services: ["Bữa sáng", "Bữa tối", "Đưa đón sân bay"], cancellation_policy_id: "", surcharge_policy_id: "" },
-];
-
-function loadFromLS(key, fallback) {
-  try {
-    const v = localStorage.getItem(key);
-    return v ? JSON.parse(v) : fallback;
-  } catch { return fallback; }
-}
-
-function saveToLS(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
-}
-
 export default function RatePlanManagement() {
   const urlParams = new URLSearchParams(window.location.search);
   const propertyId = urlParams.get("property_id") || "demo";
@@ -73,6 +46,7 @@ export default function RatePlanManagement() {
   const [policies, setPolicies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [form, setForm] = useState(defaultForm);
@@ -83,20 +57,17 @@ export default function RatePlanManagement() {
 
   const loadAll = async () => {
     setLoading(true);
-    // Try DB first, fallback to localStorage + fake data
+    setError(null);
     let rp = [], rt = [], pol = [];
     try {
-      if (propertyId !== "demo") {
-        [rp, rt, pol] = await Promise.all([
-          api.ratePlans.filter({ property_id: propertyId }),
-          api.roomTypes.filter({ property_id: propertyId }),
-          api.policies.filter({ property_id: propertyId })
-        ]);
-      }
-    } catch {}
-    // Use localStorage if DB empty
-    if (rp.length === 0) rp = loadFromLS(LS_KEY, FAKE_RATE_PLANS);
-    if (rt.length === 0) rt = loadFromLS(LS_RT_KEY, FAKE_ROOM_TYPES);
+      [rp, rt, pol] = await Promise.all([
+        api.ratePlans.filter({ property_id: propertyId }),
+        api.roomTypes.filter({ property_id: propertyId }),
+        api.policies.filter({ property_id: propertyId })
+      ]);
+    } catch (e) {
+      setError(e?.message || "Không thể tải dữ liệu");
+    }
     setRatePlans(rp);
     setRoomTypes(rt);
     setPolicies(pol);
@@ -120,32 +91,27 @@ export default function RatePlanManagement() {
 
   const save = async () => {
     setSaving(true);
+    setError(null);
     const payload = { ...form, property_id: propertyId };
-    let updated;
-    if (editItem) {
-      updated = ratePlans.map(r => r.id === editItem.id ? { ...payload, id: editItem.id } : r);
-    } else {
-      const newItem = { ...payload, id: "rp_" + Date.now() };
-      updated = [...ratePlans, newItem];
-    }
-    setRatePlans(updated);
-    saveToLS(LS_KEY, updated);
-    // Try sync to DB silently
     try {
-      if (propertyId !== "demo") {
-        if (editItem) await api.ratePlans.update(editItem.id, payload);
-        else await api.ratePlans.create(payload);
-      }
-    } catch {}
+      if (editItem) await api.ratePlans.update(editItem.id, payload);
+      else await api.ratePlans.create(payload);
+      await loadAll();
+      setShowForm(false);
+    } catch (e) {
+      setError(e?.message || "Không thể lưu gói giá");
+    }
     setSaving(false);
-    setShowForm(false);
   };
 
   const deleteRatePlan = async (id) => {
-    const updated = ratePlans.filter(r => r.id !== id);
-    setRatePlans(updated);
-    saveToLS(LS_KEY, updated);
-    try { if (propertyId !== "demo") await api.ratePlans.delete(id); } catch {}
+    setError(null);
+    try {
+      await api.ratePlans.delete(id);
+      await loadAll();
+    } catch (e) {
+      setError(e?.message || "Không thể xoá gói giá");
+    }
     setDeleteConfirm(null);
   };
 
@@ -265,6 +231,12 @@ export default function RatePlanManagement() {
           </Button>
         }
       />
+
+      {error && (
+        <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          {error}
+        </div>
+      )}
 
       {loading ? (
         <div className="text-center py-16 text-muted-foreground">Đang tải...</div>
