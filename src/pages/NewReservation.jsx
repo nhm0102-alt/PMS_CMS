@@ -23,6 +23,7 @@ export default function NewReservation() {
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [roomTypes, setRoomTypes] = useState([]);
+  const [otaChannels, setOtaChannels] = useState([]);
 
   const [form, setForm] = useState({
     // Guest
@@ -42,6 +43,7 @@ export default function NewReservation() {
     } else {
       api.roomTypes.list("-created_date", 50).then(setRoomTypes);
     }
+    api.otaChannels.list().then(setOtaChannels);
   }, [propertyId]);
 
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
@@ -247,11 +249,9 @@ export default function NewReservation() {
                     <SelectItem value="direct">Trực tiếp</SelectItem>
                     <SelectItem value="phone">Điện thoại</SelectItem>
                     <SelectItem value="walk_in">Walk-in</SelectItem>
-                    <SelectItem value="booking_com">Booking.com</SelectItem>
-                    <SelectItem value="agoda">Agoda</SelectItem>
-                    <SelectItem value="expedia">Expedia</SelectItem>
-                    <SelectItem value="airbnb">Airbnb</SelectItem>
-                    <SelectItem value="traveloka">Traveloka</SelectItem>
+                    {otaChannels.filter(c => c.connected).map(c => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
                     <SelectItem value="other_ota">OTA khác</SelectItem>
                   </SelectContent>
                 </Select>

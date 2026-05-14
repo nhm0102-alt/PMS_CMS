@@ -51,6 +51,7 @@ export default function ReservationCalendar() {
   const [rooms, setRooms] = useState([]);
   const [roomTypes, setRoomTypes] = useState([]);
   const [reservations, setReservations] = useState([]);
+  const [otaChannels, setOtaChannels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -67,11 +68,13 @@ export default function ReservationCalendar() {
       api.roomTypes.filter(q),
       api.reservations.filter(q, "-check_in_date", 500),
       api.guests.filter(q, "last_name", 500),
-    ]).then(([r, rt, res, g]) => {
+      api.otaChannels.list(),
+    ]).then(([r, rt, res, g, ota]) => {
       setRooms(r);
       setRoomTypes(rt);
       setReservations(res);
       setGuests(g);
+      setOtaChannels(ota);
       setLoading(false);
     });
   }, [propertyId]);
@@ -285,6 +288,7 @@ export default function ReservationCalendar() {
             filterStatus={filterStatus}
             search={search}
             propertyId={propertyId}
+            otaChannels={otaChannels}
           />
         )}
       </div>
@@ -1083,7 +1087,7 @@ function FloorRoomCard({ room, typeMap, isCheckingIn, isCheckingOut }) {
 }
 
 /* ─────────────── LIST VIEW ─────────────── */
-function ListView({ reservations, filterStatus, search, propertyId }) {
+function ListView({ reservations, filterStatus, search, propertyId, otaChannels = [] }) {
   const filtered = reservations.filter(r => {
     const matchStatus = filterStatus === "all" || r.status === filterStatus;
     const matchSearch = !search ||
@@ -1097,6 +1101,12 @@ function ListView({ reservations, filterStatus, search, propertyId }) {
     direct: "Trực tiếp", phone: "Điện thoại", email: "Email", walk_in: "Walk-in",
     booking_com: "Booking.com", agoda: "Agoda", expedia: "Expedia", airbnb: "Airbnb",
     traveloka: "Traveloka", other_ota: "OTA khác",
+  };
+
+  const getSourceLabel = (source) => {
+    if (sourceLabels[source]) return sourceLabels[source];
+    const ota = otaChannels.find(c => c.id === source);
+    return ota ? ota.name : (source || "—");
   };
 
   const handleStatusChange = async (r, status) => {
@@ -1147,7 +1157,7 @@ function ListView({ reservations, filterStatus, search, propertyId }) {
                 </td>
                 <td className="px-4 py-3">
                   <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full whitespace-nowrap">
-                    {sourceLabels[r.source] || r.source || "—"}
+                    {getSourceLabel(r.source)}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm font-semibold text-foreground whitespace-nowrap">

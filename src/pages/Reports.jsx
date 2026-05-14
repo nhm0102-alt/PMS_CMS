@@ -15,6 +15,7 @@ export default function Reports() {
 
   const [reservations, setReservations] = useState([]);
   const [rooms, setRooms] = useState([]);
+  const [otaChannels, setOtaChannels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState("30");
 
@@ -23,7 +24,13 @@ export default function Reports() {
     Promise.all([
       api.reservations.filter(q, "-created_date", 500),
       api.rooms.filter(q),
-    ]).then(([r, rm]) => { setReservations(r); setRooms(rm); setLoading(false); });
+      api.otaChannels.list(),
+    ]).then(([r, rm, ota]) => { 
+      setReservations(r); 
+      setRooms(rm); 
+      setOtaChannels(ota);
+      setLoading(false); 
+    });
   }, [propertyId]);
 
   const days = Number(period);
@@ -43,10 +50,17 @@ export default function Reports() {
     revenue: v,
   }));
 
-  // Source breakdown
-  const sourceCounts = {};
-  filtered.forEach(r => { sourceCounts[r.source || "direct"] = (sourceCounts[r.source || "direct"] || 0) + 1; });
-  const sourceData = Object.entries(sourceCounts).map(([k, v]) => ({ name: k, value: v }));
+  const sourceLabels = {
+    direct: "Trực tiếp", phone: "Điện thoại", walk_in: "Walk-in",
+    booking_com: "Booking.com", agoda: "Agoda", expedia: "Expedia",
+    airbnb: "Airbnb", traveloka: "Traveloka", other_ota: "OTA khác",
+  };
+
+  const getSourceLabel = (source) => {
+    if (sourceLabels[source]) return sourceLabels[source];
+    const ota = otaChannels.find(c => c.id === source);
+    return ota ? ota.name : (source || "N/A");
+  };
 
   // Stats
   const totalRevenue = filtered.filter(r => r.status !== "cancelled").reduce((s, r) => s + (r.total_amount || 0), 0);
@@ -58,11 +72,10 @@ export default function Reports() {
     ? Math.round((filtered.filter(r => r.status === "cancelled").length / filtered.length) * 100)
     : 0;
 
-  const sourceLabels = {
-    direct: "Trực tiếp", phone: "Điện thoại", walk_in: "Walk-in",
-    booking_com: "Booking.com", agoda: "Agoda", expedia: "Expedia",
-    airbnb: "Airbnb", traveloka: "Traveloka", other_ota: "OTA khác",
-  };
+  // Source breakdown
+  const sourceCounts = {};
+  filtered.forEach(r => { sourceCounts[r.source || "direct"] = (sourceCounts[r.source || "direct"] || 0) + 1; });
+  const sourceData = Object.entries(sourceCounts).map(([k, v]) => ({ name: getSourceLabel(k), value: v }));
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">

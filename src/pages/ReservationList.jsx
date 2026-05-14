@@ -34,17 +34,28 @@ export default function ReservationList() {
   const propertyId = urlParams.get("property_id");
 
   const [reservations, setReservations] = useState([]);
+  const [otaChannels, setOtaChannels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
     const query = propertyId ? { property_id: propertyId } : {};
-    api.reservations.filter(query, "-created_date", 100).then(d => {
-      setReservations(d);
+    Promise.all([
+      api.reservations.filter(query, "-created_date", 100),
+      api.otaChannels.list()
+    ]).then(([resData, otaData]) => {
+      setReservations(resData);
+      setOtaChannels(otaData);
       setLoading(false);
     });
   }, [propertyId]);
+
+  const getSourceLabel = (source) => {
+    if (sourceLabels[source]) return sourceLabels[source];
+    const ota = otaChannels.find(c => c.id === source);
+    return ota ? ota.name : (source || "N/A");
+  };
 
   const filtered = reservations.filter(r => {
     const matchSearch = !search ||
@@ -145,7 +156,9 @@ export default function ReservationList() {
                       {r.check_out_date ? format(new Date(r.check_out_date), "dd/MM/yyyy") : "—"}
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">{sourceLabels[r.source] || r.source || "—"}</span>
+                      <Badge variant="outline" className="bg-muted/50 font-normal">
+                        {getSourceLabel(r.source)}
+                      </Badge>
                     </td>
                     <td className="px-4 py-3.5 text-sm font-semibold text-foreground">
                       {r.total_amount ? r.total_amount.toLocaleString("vi-VN") + "đ" : "—"}

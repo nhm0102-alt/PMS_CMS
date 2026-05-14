@@ -62,8 +62,9 @@ export default function PricingCalendar() {
   const [startDate, setStartDate] = useState(startOfDay(new Date()));
   const [roomTypes, setRoomTypes] = useState([]);
   const [ratePlans, setRatePlans] = useState([]);
-  const [inventory, setInventory] = useState(() => loadFromLS("staypro_pricing_inventory", {}));
+  const [inventory, setInventory] = useState({});
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [filterRoomType, setFilterRoomType] = useState("all");
   const [filterRatePlan, setFilterRatePlan] = useState("all");
 
@@ -87,10 +88,29 @@ export default function PricingCalendar() {
       if (rp.length === 0) rp = loadFromLS("staypro_rateplans", FAKE_RATE_PLANS);
       setRoomTypes(rt.filter(r => r.is_active !== false));
       setRatePlans(rp.filter(r => r.is_active !== false));
-      setLoading(false);
+
+      // Load inventory from API
+      if (pid !== "demo") {
+        fetchInventory(pid, startDate);
+      } else {
+        setLoading(false);
+      }
     };
     tryLoad();
-  }, [propertyId]);
+  }, [propertyId, startDate]);
+
+  const fetchInventory = async (pid, start) => {
+    setRefreshing(true);
+    try {
+      const data = await api.pricing.getInventory(pid, format(start, "yyyy-MM-dd"), DAYS_VISIBLE);
+      setInventory(data || {});
+    } catch (error) {
+      console.error("Failed to fetch inventory", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   const days = Array.from({ length: DAYS_VISIBLE }, (_, i) => addDays(startDate, i));
 
@@ -117,13 +137,31 @@ export default function PricingCalendar() {
     setEditModal({ rtId, rpId, dateStr });
   };
 
-  const saveEdit = () => {
+  const saveEdit = async () => {
+    if (!editModal) return;
     const { rtId, rpId, dateStr } = editModal;
-    const key = makeCellKey(rtId, rpId, dateStr);
-    const updated = { ...inventory, [key]: { ...editForm } };
-    setInventory(updated);
-    localStorage.setItem("staypro_pricing_inventory", JSON.stringify(updated));
-    setEditModal(null);
+    const pid = propertyId || "demo";
+
+    try {
+      if (pid !== "demo") {
+        await api.pricing.updateInventory(pid, {
+          roomTypeId: rtId,
+          ratePlanId: rpId,
+          dateStr: dateStr,
+          ...editForm
+        });
+      }
+
+      // Update local state
+      const key = makeCellKey(rtId, rpId, dateStr);
+      setInventory(prev => ({
+        ...prev,
+        [key]: { ...editForm }
+      }));
+      setEditModal(null);
+    } catch (error) {
+      console.error("Failed to save inventory", error);
+    }
   };
 
   // Navigate
